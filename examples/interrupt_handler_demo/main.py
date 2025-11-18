@@ -31,13 +31,12 @@ class DemoAgent:
 async def run_demo():
     agent = DemoAgent()
 
-    # Added webhook_url for HTTPS BONUS — nothing else changes
+    # Removed webhook_url because InterruptHandler does not accept it now
     handler = InterruptHandler(
         agent,
         ignored_words=['uh', 'umm', 'hmm', 'haan'],
         confidence_threshold=0.6,
-        http_config_port=None,
-        webhook_url="https://postman-echo.com/post"   # <-- BONUS HTTPS added
+        http_config_port=None
     )
 
     print("\n=== DEMO START ===\n")
