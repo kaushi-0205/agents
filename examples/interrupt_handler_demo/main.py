@@ -24,12 +24,21 @@ class DemoAgent:
                 cb(payload)
 
     async def pause_tts(self):
-        # Demo action when TTS is stopped by the handler
+        # Demo action when TTS stops due to interruption
         print("\n>>> DEMO: Agent TTS STOPPED <<<\n")
+
 
 async def run_demo():
     agent = DemoAgent()
-    handler = InterruptHandler(agent, ignored_words=['uh','umm','hmm','haan'], confidence_threshold=0.6, http_config_port=None)
+
+    # Added webhook_url for HTTPS BONUS — nothing else changes
+    handler = InterruptHandler(
+        agent,
+        ignored_words=['uh', 'umm', 'hmm', 'haan'],
+        confidence_threshold=0.6,
+        http_config_port=None,
+        webhook_url="https://postman-echo.com/post"   # <-- BONUS HTTPS added
+    )
 
     print("\n=== DEMO START ===\n")
 
@@ -55,7 +64,7 @@ async def run_demo():
         "end_time": 3
     })
 
-    # Agent stops speaking (handler will have called pause_tts)
+    # Agent stops speaking due to STOP keyword
     await agent.emit("agent_speaking_changed", False)
 
     # ---- FILLER WHEN AGENT SILENT ----
@@ -70,15 +79,17 @@ async def run_demo():
     # ---- LOW CONFIDENCE TEST ----
     print("\nAgent speaking again...")
     await agent.emit("agent_speaking_changed", True)
+
     print("User says noise with low confidence...")
     await agent.emit("transcription", {
-        "text": "sdfkjwe",   # nonsense
+        "text": "sdfkjwe",
         "confidence": 0.10,
         "start_time": 6,
         "end_time": 7
     })
 
     print("\n=== DEMO END ===\n")
+
 
 if __name__ == "__main__":
     asyncio.run(run_demo())
